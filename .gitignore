@@ -19,3 +19,12 @@
 
 # Go workspace file
 go.work
+
+# Mac filesystem preferenes
+.DS_Store
+
+# Things like API keys
+.env
+
+# Output files
+output/
