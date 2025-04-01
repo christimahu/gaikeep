@@ -1,0 +1,267 @@
+/**
+ * styles.css - Custom styles for Gai Keep website
+ * Extends the Tailwind CSS framework with custom styling
+ */
+
+/*--------------------------------------------------------------
+# Typography
+--------------------------------------------------------------*/
+/* Custom font for decorative text elements */
+.font-dancingScript {
+    font-family: 'Dancing Script', cursive;
+}
+
+/* Base typography */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/*--------------------------------------------------------------
+# Global Elements
+--------------------------------------------------------------*/
+/* Smooth scrolling behavior for entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/*--------------------------------------------------------------
+# Images
+--------------------------------------------------------------*/
+/* Image hover effects */
+img {
+    transition: transform 0.5s ease;
+}
+
+img:hover {
+    transform: scale(1.05);
+}
+
+/*--------------------------------------------------------------
+# Navigation
+--------------------------------------------------------------*/
+/* Active navigation state */
+.navigation a.active {
+    color: #ddd6fe; /* Light purple */
+    font-weight: 500;
+    position: relative;
+}
+
+/* Visual indicator for active navigation items */
+.navigation a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #ddd6fe;
+}
+
+/*--------------------------------------------------------------
+# Component Animations
+--------------------------------------------------------------*/
+/* Card hover animations */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Button hover effects */
+.btn-hover {
+    transition: all 0.3s ease;
+}
+
+.btn-hover:hover {
+    transform: translateY(-2px);
+}
+
+/* Section fade-in animations */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/*--------------------------------------------------------------
+# Mobile Menu
+--------------------------------------------------------------*/
+@media (max-width: 768px) {
+    /* Mobile menu animation and styling */
+    #mobile-menu {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform-origin: top;
+    }
+    
+    /* Hidden state */
+    #mobile-menu.hidden {
+        opacity: 0;
+        transform: scaleY(0);
+        pointer-events: none;
+    }
+    
+    /* Visible state */
+    #mobile-menu:not(.hidden) {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        left: 0;
+        background-color: #4c1d95;
+        padding: 1rem;
+        opacity: 1;
+        transform: scaleY(1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+    }
+    
+    /* Mobile menu items */
+    #mobile-menu:not(.hidden) li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    #mobile-menu:not(.hidden) li:last-child {
+        border-bottom: none;
+    }
+}
+
+/*--------------------------------------------------------------
+# Accessibility Enhancements
+--------------------------------------------------------------*/
+/* Focus styles for keyboard navigation */
+a:focus, button:focus {
+    outline: 2px solid #a78bfa;
+    outline-offset: 2px;
+}
+
+/* Skip to content link (hidden but accessible) */
+.skip-to-content {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1em;
+    background-color: #fff;
+    color: #4c1d95;
+    text-decoration: none;
+}
+
+.skip-to-content:focus {
+    left: 0;
+    top: 0;
+}
+
+/*--------------------------------------------------------------
+# Mobile & Touch Enhancements
+--------------------------------------------------------------*/
+/* Custom viewport height variable to fix iOS 100vh issues */
+:root {
+    --vh: 1vh;
+}
+
+/* Use the custom viewport height variable for full-height elements */
+.full-height {
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Touch active state */
+.touch-active {
+    transform: scale(0.98) !important;
+    opacity: 0.8;
+    transition: transform 0.1s ease, opacity 0.1s ease !important;
+}
+
+/* iOS safe area insets (for iPhone X and newer) */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    nav {
+        padding-top: max(1rem, env(safe-area-inset-top));
+        padding-left: max(1.5rem, env(safe-area-inset-left));
+        padding-right: max(1.5rem, env(safe-area-inset-right));
+    }
+    
+    footer {
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+        padding-left: max(1.5rem, env(safe-area-inset-left));
+        padding-right: max(1.5rem, env(safe-area-inset-right));
+    }
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Disable callouts and highlight taps */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimized scrolling on iOS */
+body {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Disable selection on interface elements */
+.no-select {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/*--------------------------------------------------------------
+# Custom Scrollbar
+--------------------------------------------------------------*/
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8b5cf6;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+}
+
+/*--------------------------------------------------------------
+# Print Styles
+--------------------------------------------------------------*/
+@media print {
+    nav, footer, .no-print {
+        display: none;
+    }
+    
+    body {
+        font-size: 12pt;
+        color: #000;
+        background: #fff;
+    }
+    
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+    
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Gai Keep",
+  "short_name": "Gai Keep",
+  "description": "Generated Artificial Intelligence Keeper - Enhance your experience with LLMs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "utilities", "ai"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
