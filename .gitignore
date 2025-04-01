@@ -1,0 +1,46 @@
+# Binaries
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+/coverage/
+
+# Generated files
+*.pb.go
+/proto/gaikeep/*.pb.go
+
+# Dependency directories
+/vendor/
+
+# IDE directories
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Application data
+/data/
+
+# Environment variables
+.env
+.env.local
+
+# Generated documentation
+/docs/static/

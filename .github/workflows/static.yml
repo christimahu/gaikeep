@@ -1,0 +1,206 @@
+# Complete workflow for Gai Keep
+# Handles testing, linting, and deployment to GitHub Pages
+#
+# This workflow performs the following tasks:
+# - Code verification: formatting and linting
+# - Testing: unit and integration tests
+# - Deployment: publish web content to GitHub Pages
+#
+# The workflow runs on pushes to main, pull requests, and can be triggered manually.
+name: Gai Keep CI/CD
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches: ["main"]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read  # For checking out the repository
+  pages: write    # For deploying to GitHub Pages
+  id-token: write # For authentication during deployment
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Verify code formatting
+  # Ensures consistent code style across the codebase by checking all Go files
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Only needs the most recent commit
+      
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'  # Using the required Go version for the project
+          cache: true         # Enable module caching for faster builds
+      
+      - name: Format check
+        run: |
+          # Run gofmt with check mode to verify formatting
+          # This will fail if any Go files aren't properly formatted
+          if [ "$(gofmt -l . | grep -v vendor | wc -l)" -gt 0 ]; then
+            echo "The following files are not formatted correctly:"
+            gofmt -l . | grep -v vendor
+            exit 1
+          fi
+
+  # Run linting
+  # Performs static code analysis to identify potential issues
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Only needs the most recent commit
+      
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'  # Using the required Go version for the project
+          cache: true         # Enable module caching for faster builds
+      
+      - name: Install Protocol Buffer compiler
+        uses: arduino/setup-protoc@v2
+        with:
+          version: '3.x'      # Use the latest stable 3.x release
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Module configuration and code generation
+        run: |
+          # Set up module configuration to resolve imports locally
+          # This prevents Go from trying to download the module from GitHub
+          echo "replace github.com/ChristiMahu/gaikeep => ./" >> go.mod
+          
+          # Install Protocol Buffer plugins for Go to generate gRPC code
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+          
+          # Generate Protocol Buffer code from .proto definitions
+          make proto
+      
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      
+      - name: Run linter
+        run: make lint
+
+  # Run unit tests
+  # Verifies individual components with fast, isolated tests
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Only needs the most recent commit
+      
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'  # Using the required Go version for the project
+          cache: true         # Enable module caching for faster builds
+      
+      - name: Install Protocol Buffer compiler
+        uses: arduino/setup-protoc@v2
+        with:
+          version: '3.x'      # Use the latest stable 3.x release
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Module configuration and dependencies
+        run: |
+          # Set up module configuration to resolve imports locally
+          # This prevents Go from trying to download the module from GitHub
+          echo "replace github.com/ChristiMahu/gaikeep => ./" >> go.mod
+          
+          # Install Protocol Buffer plugins for Go to generate gRPC code
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+          
+          # Generate Protocol Buffer code and install dependencies
+          make proto
+          make deps
+      
+      - name: Run unit tests
+        run: make unit
+
+  # Run integration tests
+  # Verifies complete workflows and component interactions
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Only needs the most recent commit
+      
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'  # Using the required Go version for the project
+          cache: true         # Enable module caching for faster builds
+      
+      - name: Install Protocol Buffer compiler
+        uses: arduino/setup-protoc@v2
+        with:
+          version: '3.x'      # Use the latest stable 3.x release
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Module configuration and dependencies
+        run: |
+          # Set up module configuration to resolve imports locally
+          # This prevents Go from trying to download the module from GitHub
+          echo "replace github.com/ChristiMahu/gaikeep => ./" >> go.mod
+          
+          # Install Protocol Buffer plugins for Go to generate gRPC code
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+          
+          # Generate Protocol Buffer code and install dependencies
+          make proto
+          make deps
+      
+      - name: Run integration tests
+        run: make integration
+
+  # Deploy to GitHub Pages after tests pass
+  # Publishes web content to GitHub Pages for public access
+  deploy:
+    # Only run this job if all test jobs succeed
+    needs: [format, lint, unit-tests, integration-tests]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Only needs the most recent commit
+      
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+      
+      - name: Upload web directory as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the web directory containing the site content
+          path: 'web'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

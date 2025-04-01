@@ -1,0 +1,80 @@
+/**
+ * splash-screens.css - iOS-specific splash screen styles
+ * These styles ensure proper display of splash screens on iOS devices when 
+ * the site is added to the home screen
+ */
+
+/* Hide body content during splash screen display */
+body:not(:root:root) {
+  background-color: #ffffff;
+}
+
+/* Base styles for all splash screens */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Logo container */
+.splash-logo {
+  width: 150px;
+  height: 150px;
+  border-radius: 20%;
+  background-image: linear-gradient(to right, #8b5cf6, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+/* Logo text */
+.splash-logo-text {
+  font-family: 'Dancing Script', cursive;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+/* Loading indicator */
+.splash-loading {
+  margin-top: 30px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(139, 92, 246, 0.2);
+  border-radius: 50%;
+  border-top-color: #8b5cf6;
+  animation: splash-spin 1s linear infinite;
+}
+
+/* Animation for loading spinner */
+@keyframes splash-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Show splash screen only when launched from home screen */
+@media all and (display-mode: standalone) {
+  .splash-screen {
+    display: flex;
+  }
+}
+
+/* Hide splash screen once content is loaded */
+.splash-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
